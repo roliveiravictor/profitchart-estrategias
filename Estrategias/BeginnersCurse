@@ -1,0 +1,20 @@
+var 
+a: Float;
+
+begin
+Plot(IFR(21));
+//Plot(RsiStochastic(20) - RsiStochastic(5));
+//Plot(PriceVolumeTrend);
+//Plot(NelogicaBottomFinder);
+//Plot2(NelogicaPullBackFinder);
+//Plot(QuantityVol(true));
+
+    PaintBar(clWhite);
+
+    a := IFR(21); 
+    //(PriceVolumeTrend < 0) then =//and 
+    //(PriceVolumeTrend > 10) then
+    if(a < 30) or (a > 70) then
+    if(C_Hammer_HangingMan(14, 2, 0, 0) = 1) then 
+        PaintBar(clRed);
+end;     
