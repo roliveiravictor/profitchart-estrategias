@@ -1,20 +1,78 @@
 var 
-a: Float;
+strengthIndex: Float;
+isTrendReversalPattern: Boolean;
+isTrendConfirmation: Boolean;
 
 begin
-Plot(IFR(21));
+//Plot(IFR(21));
 //Plot(RsiStochastic(20) - RsiStochastic(5));
 //Plot(PriceVolumeTrend);
 //Plot(NelogicaBottomFinder);
 //Plot2(NelogicaPullBackFinder);
 //Plot(QuantityVol(true));
 
+    //Set all candlews to white
     PaintBar(clWhite);
 
-    a := IFR(21); 
-    //(PriceVolumeTrend < 0) then =//and 
-    //(PriceVolumeTrend > 10) then
-    if(a < 30) or (a > 70) then
-    if(C_Hammer_HangingMan(14, 2, 0, 0) = 1) then 
-        PaintBar(clRed);
-end;     
+    //Set indexes
+    strengthIndex := IFR(21);
+
+    //Set trend reversal patterns
+    isTrendReversalPattern := 
+        ((C_Hammer_HangingMan(14, 2, 0, 0) = 1) or 
+        (C_MornStar_EveStar(14, 0, 0) = 1) or
+        (C_PierceLine_DkCloud(14, 0, 0)= 1) or
+        (C_ShootingStar(14, 2) = 1) or
+        (C_3WhSolds_3BlkCrows(14, 5, 0, 0) = 1)) and
+        (C_BullEng_BearEng(14, 0, 0) = 0);
+
+	
+    //#Set trend reversal confirmations
+    	isTrendConfirmation := (strengthIndex < 30) or (strengthIndex > 70);
+	
+    if(isTrendReversalPattern and isTrendConfirmation) then PaintBar(clRed);
+end;
+
+// Detector de topos e fundos
+// Contribuição Edson da Silva Júnior
+input
+  Per(1);
+
+var
+  Idx : Integer;
+  Topo, Fundo : Float;
+  isTopo, isFundo : Integer;
+  IFR: Float;
+
+begin
+
+  isTopo := 0;
+  isFundo := 0;
+
+  for Idx := 0 to Per-1 do
+  begin
+    if (High[Idx] > High[Per]) then
+    begin
+      Topo := High[Idx];
+      isTopo := 1;
+      isFundo := 0;
+    end;
+
+    if (Low[Idx] < Low[Per]) then
+    begin
+      Fundo := Low[Idx];
+      isTopo := 0;
+      isFundo := 1;
+    end;
+  end;
+
+  if (isTopo = 1) then
+  begin
+    Plot(Topo);
+  end;
+
+  if (isFundo = 1) then
+  begin
+    Plot(Fundo);
+  end;
+end;
