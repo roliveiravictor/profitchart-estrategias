@@ -1,78 +1,82 @@
-var 
+input
+
+FastAverage(12);
+SlowAverage(26);
+
+var
+ 
 strengthIndex: Float;
+movingAverageIndex: Float;                                                                
+
 isTrendReversalPattern: Boolean;
 isTrendConfirmation: Boolean;
 
+averageFast     : Float;
+averageSlow     : Float;
+previousAverageFast : Float;
+previousAverageSlow : Float;
+
 begin
-//Plot(IFR(21));
-//Plot(RsiStochastic(20) - RsiStochastic(5));
-//Plot(PriceVolumeTrend);
+Plot(VolumeOsc(12, 26));
+//Plot(sPrevAvgFast);
+//Plot2(sPrevAvgSlow);
+//Indicador volume
+//Indicador Média Móvel                           
+//Plot(Momentum(12, 4, 0));
+//Plot2(TopBottomDetector(2));
+//Plot3(RsiStochastic(20) - RsiStochastic(5));
+//Plot4(PriceVolumeTrend);
 //Plot(NelogicaBottomFinder);
 //Plot2(NelogicaPullBackFinder);
 //Plot(QuantityVol(true));
 
-    //Set all candlews to white
-    PaintBar(clWhite);
+/////////////////////////////////////////////////////////
+//                                                     //
+//  Calculate dependencies                             //
+//                                                     //
+/////////////////////////////////////////////////////////
+averageFast     := MediaExp(FastAverage, Close);
+averageSlow     := MediaExp(SlowAverage, Close);
+previousAverageFast := averageFast[1];
+previousAverageSlow := averageSlow[1]; 
 
-    //Set indexes
-    strengthIndex := IFR(21);
+/////////////////////////////////////////////////////////
+//                                                     //
+//  Set all candles as default white                   //
+//                                                     //
+/////////////////////////////////////////////////////////
+//PaintBar(clWhite);
 
-    //Set trend reversal patterns
-    isTrendReversalPattern := 
-        ((C_Hammer_HangingMan(14, 2, 0, 0) = 1) or 
-        (C_MornStar_EveStar(14, 0, 0) = 1) or
-        (C_PierceLine_DkCloud(14, 0, 0)= 1) or
-        (C_ShootingStar(14, 2) = 1) or
-        (C_3WhSolds_3BlkCrows(14, 5, 0, 0) = 1)) and
-        (C_BullEng_BearEng(14, 0, 0) = 0);
+/////////////////////////////////////////////////////////
+//                                                     //
+//  Set indexes                                        //
+//                                                     //
+/////////////////////////////////////////////////////////
+strengthIndex := IFR(21);
+movingAverageIndex := previousAverageFast - previousAverageSlow;
+      
+/////////////////////////////////////////////////////////
+//                                                     //
+//  Set trend reversal patterns                        //
+//                                                     //
+/////////////////////////////////////////////////////////
+isTrendReversalPattern := 
+  ((C_Hammer_HangingMan(14, 2, 0, 0) = 1) or 
+  (C_MornStar_EveStar(14, 0, 0) = 1) or
+  (C_PierceLine_DkCloud(14, 0, 0)= 1) or
+  (C_ShootingStar(14, 2) = 1) or
+  (C_3WhSolds_3BlkCrows(14, 5, 0, 0) = 1)) and
+  (C_BullEng_BearEng(14, 0, 0) = 0);
 
+/////////////////////////////////////////////////////////
+//                                                     //
+//  Set trend confirmations                            //
+//                                                     //
+/////////////////////////////////////////////////////////
+	isTrendConfirmation := 
+  (strengthIndex < 35) or (strengthIndex > 65);
 	
-    //#Set trend reversal confirmations
-    	isTrendConfirmation := (strengthIndex < 30) or (strengthIndex > 70);
-	
-    if(isTrendReversalPattern and isTrendConfirmation) then PaintBar(clRed);
-end;
+if(isTrendReversalPattern) then 
+  PaintBar(RGB(255,111, 0));
 
-// Detector de topos e fundos
-// Contribuição Edson da Silva Júnior
-input
-  Per(1);
-
-var
-  Idx : Integer;
-  Topo, Fundo : Float;
-  isTopo, isFundo : Integer;
-  IFR: Float;
-
-begin
-
-  isTopo := 0;
-  isFundo := 0;
-
-  for Idx := 0 to Per-1 do
-  begin
-    if (High[Idx] > High[Per]) then
-    begin
-      Topo := High[Idx];
-      isTopo := 1;
-      isFundo := 0;
-    end;
-
-    if (Low[Idx] < Low[Per]) then
-    begin
-      Fundo := Low[Idx];
-      isTopo := 0;
-      isFundo := 1;
-    end;
-  end;
-
-  if (isTopo = 1) then
-  begin
-    Plot(Topo);
-  end;
-
-  if (isFundo = 1) then
-  begin
-    Plot(Fundo);
-  end;
 end;
