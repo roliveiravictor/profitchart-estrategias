@@ -9,7 +9,9 @@ strengthIndex: Float;
 movingAverageIndex: Float;                                                                
 
 isTrendReversalPattern: Boolean;
-isTrendConfirmation: Boolean;
+
+isPositiveSaturation: Boolean;
+isNegativeSaturation: Boolean;
 
 averageFast     : Float;
 averageSlow     : Float;
@@ -17,11 +19,8 @@ previousAverageFast : Float;
 previousAverageSlow : Float;
 
 begin
-Plot(VolumeOsc(12, 26));
-//Plot(sPrevAvgFast);
-//Plot2(sPrevAvgSlow);
-//Indicador volume
-//Indicador Média Móvel                           
+//Plot(VolumeOsc(12, 26));
+//Indicador volume                          
 //Plot(Momentum(12, 4, 0));
 //Plot2(TopBottomDetector(2));
 //Plot3(RsiStochastic(20) - RsiStochastic(5));
@@ -42,18 +41,12 @@ previousAverageSlow := averageSlow[1];
 
 /////////////////////////////////////////////////////////
 //                                                     //
-//  Set all candles as default white                   //
-//                                                     //
-/////////////////////////////////////////////////////////
-//PaintBar(clWhite);
-
-/////////////////////////////////////////////////////////
-//                                                     //
 //  Set indexes                                        //
 //                                                     //
 /////////////////////////////////////////////////////////
 strengthIndex := IFR(21);
 movingAverageIndex := previousAverageFast - previousAverageSlow;
+
       
 /////////////////////////////////////////////////////////
 //                                                     //
@@ -70,13 +63,28 @@ isTrendReversalPattern :=
 
 /////////////////////////////////////////////////////////
 //                                                     //
-//  Set trend confirmations                            //
+//  Set saturations                                    //
 //                                                     //
 /////////////////////////////////////////////////////////
-	isTrendConfirmation := 
-  (strengthIndex < 35) or (strengthIndex > 65);
-	
+isPositiveSaturation := (strengthIndex >= 70) and
+  (movingAverageIndex >= 1);
+
+isNegativeSaturation := (strengthIndex <= 30) and
+  (movingAverageIndex <= -1);
+   
+
+/////////////////////////////////////////////////////////
+//                                                     //
+//  Set colors                                         //
+//                                                     //
+/////////////////////////////////////////////////////////
 if(isTrendReversalPattern) then 
   PaintBar(RGB(255,111, 0));
+  	
+if(isPositiveSaturation) then 
+  PaintBar(clRed);
+
+if(isNegativeSaturation) then 
+  PaintBar(clGreen);
 
 end;
