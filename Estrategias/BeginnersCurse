@@ -1,13 +1,15 @@
 input
 
-FastAverage(12);
-SlowAverage(26);
+FastAverage(9);
+SlowAverage(21);
 
 var
  
 strengthIndex: Float;
 movingAverageIndex: Float;
-volumeIndex: Float;                                                                
+volumeIndex: Float;
+
+isBottomOrTop: Boolean;                                                                
 
 isTrendReversalPattern: Boolean;
 
@@ -23,11 +25,11 @@ previousAverageSlow : Float;
 
 begin
 //Plot(Ceiling(QuantityVol(true)[2]));
-//Plot(Sin(Volume));
-Plot(Abs(Sin(QuantityVol(true))));
+//Plot(AgressionVolSell);
+//Plot(Abs(Sin(QuantityVol(true))));
 //Indicador volume                          
 //Plot(Momentum(12, 4, 0));
-//Plot2(TopBottomDetector(2));
+//Plot2(Abs(Sin(TopBottomDetector(0))));
 //Plot3(RsiStochastic(20) - RsiStochastic(5));
 //Plot4(PriceVolumeTrend);
 //Plot(NelogicaBottomFinder);
@@ -50,8 +52,10 @@ previousAverageSlow := averageSlow[1];
 //                                                     //
 /////////////////////////////////////////////////////////
 strengthIndex := IFR(21);
-movingAverageIndex := previousAverageFast - previousAverageSlow;
-volumeIndex := Abs(Cos(QuantityVol(true)));
+movingAverageIndex := previousAverageFast; //- previousAverageSlow;
+volumeIndex := (QuantityVol(true));
+
+isBottomOrTop := TopBottomDetector(2) > 10;
       
 /////////////////////////////////////////////////////////
 //                                                     //
@@ -64,42 +68,44 @@ isTrendReversalPattern :=
   (C_PierceLine_DkCloud(14, 0, 0)= 1) or
   (C_ShootingStar(14, 2) = 1) or
   (C_3WhSolds_3BlkCrows(14, 5, 0, 0) = 1)) and
-  (C_BullEng_BearEng(14, 0, 0) = 0);
+  (C_BullEng_BearEng(14, 0, 0) = 0) and 
+  isBottomOrTop;
 
 /////////////////////////////////////////////////////////
 //                                                     //
 //  Set trend                                          //
 //                                                     //
 /////////////////////////////////////////////////////////
-isTrending := (volumeIndex[3] > volumeIndex) and (volumeIndex >= 0.7);
+isTrending := (volumeIndex[4] < volumeIndex[3]) and
+  (volumeIndex[3] < volumeIndex[2]) and
+  (volumeIndex[2] < volumeIndex[1]) and
+  (volumeIndex[1] < volumeIndex);
 
 /////////////////////////////////////////////////////////
 //                                                     //
 //  Set saturations                                    //
 //                                                     //
 /////////////////////////////////////////////////////////
-isPositiveSaturation := ((strengthIndex >= 70) and
-  (movingAverageIndex >= 1)) and 
-  not isTrending;
+isPositiveSaturation := ((FECHAMENTO > movingAverageIndex * 1.05) and
+  isBottomOrTop);
 
-isNegativeSaturation := ((strengthIndex <= 30) and
-  (movingAverageIndex <= -1)) and
-  not isTrending;
+isNegativeSaturation := ((FECHAMENTO < movingAverageIndex * 0.95) and 
+  isBottomOrTop);
    
 
 /////////////////////////////////////////////////////////
 //                                                     //
 //  Set colors                                         //
 //                                                     //
-/////////////////////////////////////////////////////////
-if(isTrendReversalPattern) then 
-  //PaintBar(RGB(255,111, 0));
-  PaintBar(clYellow);
-  	
+/////////////////////////////////////////////////////////	
 if(isPositiveSaturation) then 
   PaintBar(clRed);
 
 if(isNegativeSaturation) then 
   PaintBar(clGreen);
+
+if(isTrendReversalPattern) then 
+  //PaintBar(RGB(255,111, 0));
+  PaintBar(clYellow);
 
 end;
