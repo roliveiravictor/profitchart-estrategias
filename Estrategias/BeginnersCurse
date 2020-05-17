@@ -86,10 +86,10 @@ isTrending := (volumeIndex[4] < volumeIndex[3]) and
 //  Set saturations                                    //
 //                                                     //
 /////////////////////////////////////////////////////////
-isPositiveSaturation := ((FECHAMENTO > movingAverageIndex * 1.05) and
+isPositiveSaturation := ((FECHAMENTO > movingAverageIndex * 1.02) and
   isBottomOrTop);
 
-isNegativeSaturation := ((FECHAMENTO < movingAverageIndex * 0.95) and 
+isNegativeSaturation := ((FECHAMENTO < movingAverageIndex * 0.98) and 
   isBottomOrTop);
    
 
