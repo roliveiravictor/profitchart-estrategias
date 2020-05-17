@@ -6,9 +6,12 @@ SlowAverage(26);
 var
  
 strengthIndex: Float;
-movingAverageIndex: Float;                                                                
+movingAverageIndex: Float;
+volumeIndex: Float;                                                                
 
 isTrendReversalPattern: Boolean;
+
+isTrending: Boolean;
 
 isPositiveSaturation: Boolean;
 isNegativeSaturation: Boolean;
@@ -19,7 +22,9 @@ previousAverageFast : Float;
 previousAverageSlow : Float;
 
 begin
-//Plot(VolumeOsc(12, 26));
+//Plot(Ceiling(QuantityVol(true)[2]));
+//Plot(Sin(Volume));
+Plot(Abs(Sin(QuantityVol(true))));
 //Indicador volume                          
 //Plot(Momentum(12, 4, 0));
 //Plot2(TopBottomDetector(2));
@@ -46,7 +51,7 @@ previousAverageSlow := averageSlow[1];
 /////////////////////////////////////////////////////////
 strengthIndex := IFR(21);
 movingAverageIndex := previousAverageFast - previousAverageSlow;
-
+volumeIndex := Abs(Cos(QuantityVol(true)));
       
 /////////////////////////////////////////////////////////
 //                                                     //
@@ -63,14 +68,23 @@ isTrendReversalPattern :=
 
 /////////////////////////////////////////////////////////
 //                                                     //
+//  Set trend                                          //
+//                                                     //
+/////////////////////////////////////////////////////////
+isTrending := (volumeIndex[3] > volumeIndex) and (volumeIndex >= 0.7);
+
+/////////////////////////////////////////////////////////
+//                                                     //
 //  Set saturations                                    //
 //                                                     //
 /////////////////////////////////////////////////////////
-isPositiveSaturation := (strengthIndex >= 70) and
-  (movingAverageIndex >= 1);
+isPositiveSaturation := ((strengthIndex >= 70) and
+  (movingAverageIndex >= 1)) and 
+  not isTrending;
 
-isNegativeSaturation := (strengthIndex <= 30) and
-  (movingAverageIndex <= -1);
+isNegativeSaturation := ((strengthIndex <= 30) and
+  (movingAverageIndex <= -1)) and
+  not isTrending;
    
 
 /////////////////////////////////////////////////////////
@@ -79,7 +93,8 @@ isNegativeSaturation := (strengthIndex <= 30) and
 //                                                     //
 /////////////////////////////////////////////////////////
 if(isTrendReversalPattern) then 
-  PaintBar(RGB(255,111, 0));
+  //PaintBar(RGB(255,111, 0));
+  PaintBar(clYellow);
   	
 if(isPositiveSaturation) then 
   PaintBar(clRed);
