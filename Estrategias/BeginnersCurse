@@ -14,6 +14,9 @@ isTrendReversalPattern: Boolean;
 isPositiveSaturation: Boolean;
 isNegativeSaturation: Boolean;
 
+isGoldPositiveSaturation: Boolean;
+isGoldNegativeSaturation: Boolean;
+
 begin
 //Plot(BarType);
 
@@ -48,27 +51,39 @@ isTrendReversalPattern :=
 //  Set saturations                                    //
 //                                                     //
 /////////////////////////////////////////////////////////
-isPositiveSaturation := ((FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] >= 0.5) or 
+isPositiveSaturation := ((FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] >= 0.6) or 
   (strengthIndex > 70)) and
   (bottomOrTopIndex > 15);
 
-isNegativeSaturation := ((FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] <= -0.5) or 
+isNegativeSaturation := ((FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] <= -0.6) or 
   (strengthIndex < 30)) and
   (bottomOrTopIndex > 15);
+
+isGoldPositiveSaturation := (FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] >= 2.0) and
+  (bottomOrTopIndex > 10);
+
+isGoldNegativeSaturation := (FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] <= -2.0) and
+  (bottomOrTopIndex > 10);
    
 
 /////////////////////////////////////////////////////////
 //                                                     //
 //  Set colors                                         //
 //                                                     //
-/////////////////////////////////////////////////////////	
-if(isPositiveSaturation) then 
-  PaintBar(clRed);
-
-if(isNegativeSaturation) then 
-  PaintBar(clGreen);
-
+/////////////////////////////////////////////////////////
 if(isTrendReversalPattern) then 
   PaintBar(RGB(255,111, 0));
+  	
+if(isPositiveSaturation) then 
+  PaintBar(RGB(220, 0, 0));
+
+if(isNegativeSaturation) then 
+  PaintBar(RGB(0, 128, 0));
+
+if(isGoldPositiveSaturation) then 
+  PaintBar(RGB(255, 0, 0));
+
+if(isGoldNegativeSaturation) then 
+  PaintBar(RGB(0, 255, 0));
 
 end;
