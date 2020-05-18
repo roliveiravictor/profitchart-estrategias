@@ -48,12 +48,10 @@ isTrendReversalPattern :=
 //  Set saturations                                    //
 //                                                     //
 /////////////////////////////////////////////////////////
-isPositiveSaturation := ((FECHAMENTO > movingAverageIndex * 1.005) or 
-  (strengthIndex > 70)) and
+isPositiveSaturation := ((FECHAMENTO > movingAverageIndex * 1.02)) and
   (bottomOrTopIndex > 15);
 
-isNegativeSaturation := ((FECHAMENTO < movingAverageIndex * 0.995) or 
-  (strengthIndex < 30)) and
+isNegativeSaturation := ((FECHAMENTO < movingAverageIndex * 0.98)) and
   (bottomOrTopIndex > 15);
    
 
