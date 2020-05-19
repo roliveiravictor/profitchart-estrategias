@@ -14,11 +14,10 @@ isTrendReversalPattern: Boolean;
 isPositiveSaturation: Boolean;
 isNegativeSaturation: Boolean;
 
-isGoldPositiveSaturation: Boolean;
-isGoldNegativeSaturation: Boolean;
+isPositiveFastTrap: Boolean;
+isNegativeFastTrap: Boolean;
 
 begin
-//Plot(BarType);
 
 /////////////////////////////////////////////////////////
 //                                                     //
@@ -48,22 +47,35 @@ isTrendReversalPattern :=
 
 /////////////////////////////////////////////////////////
 //                                                     //
+//  Set traps                                          //
+//                                                     //
+/////////////////////////////////////////////////////////
+isPositiveFastTrap := (MINIMA - movingAverageIndex <= 0);
+isNegativeFastTrap := (MAXIMA - movingAverageIndex >= 0);
+
+
+/////////////////////////////////////////////////////////
+//                                                     //
 //  Set saturations                                    //
 //                                                     //
 /////////////////////////////////////////////////////////
-isPositiveSaturation := ((FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] >= 0.6) or 
-  (strengthIndex > 70)) and
+isPositiveSaturation := (
+      (
+          ((FECHAMENTO - movingAverageIndex)*10 >= 0.5) and not
+          isPositiveFastTrap
+      ) or 
+      (strengthIndex > 70)
+   ) and
   (bottomOrTopIndex > 15);
 
-isNegativeSaturation := ((FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] <= -0.6) or 
-  (strengthIndex < 30)) and
+isNegativeSaturation := (
+      (
+          ((FECHAMENTO - movingAverageIndex)*10 <= -0.5) and not
+          isNegativeFastTrap
+      ) or 
+      (strengthIndex < 30)
+  ) and
   (bottomOrTopIndex > 15);
-
-isGoldPositiveSaturation := (FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] >= 2.0) and
-  (bottomOrTopIndex > 10);
-
-isGoldNegativeSaturation := (FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] <= -2.0) and
-  (bottomOrTopIndex > 10);
    
 
 /////////////////////////////////////////////////////////
@@ -71,19 +83,13 @@ isGoldNegativeSaturation := (FECHAMENTO - MediaExp(FastAverage, FECHAMENTO)[1] <
 //  Set colors                                         //
 //                                                     //
 /////////////////////////////////////////////////////////
+if(isPositiveSaturation) then
+  PaintBar(clLime);
+
+if(isNegativeSaturation) then
+  PaintBar(clRed);
+
 if(isTrendReversalPattern) then 
   PaintBar(RGB(255,111, 0));
-  	
-if(isPositiveSaturation) then 
-  PaintBar(RGB(220, 0, 0));
-
-if(isNegativeSaturation) then 
-  PaintBar(RGB(0, 128, 0));
-
-if(isGoldPositiveSaturation) then 
-  PaintBar(RGB(255, 0, 0));
-
-if(isGoldNegativeSaturation) then 
-  PaintBar(RGB(0, 255, 0));
 
 end;
