@@ -84,10 +84,10 @@ isNegativeSaturation := (
 //                                                     //
 /////////////////////////////////////////////////////////
 if(isPositiveSaturation) then
-  PaintBar(clLime);
+  PaintBar(clRed);
 
 if(isNegativeSaturation) then
-  PaintBar(clRed);
+  PaintBar(clLime);
 
 if(isTrendReversalPattern) then 
   PaintBar(RGB(255,111, 0));
